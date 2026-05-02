@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>La Patata Caliente de las Tablas</title>
+<style>
+body { margin:0; font-family: 'Trebuchet MS'; text-align:center; color:white; }
+
+#start {
+  background: url('./resources/decorado_de_fondo.png') center/cover no-repeat;
+  position: relative;
+  overflow: hidden;
+}
+
+#start::before {
+  content: "";
+  position: absolute;
+  top:0; left:0; right:0; bottom:0;
+  background: rgba(0,0,0,0.4);
+}
+
+#startContent {
+  position: relative;
+  z-index: 2;
+}
+
+.logo {
+  width: 250px;
+  margin: 20px auto;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.lights {
+  position: absolute;
+  top:0;
+  width:100%;
+  height:100%;
+  pointer-events:none;
+  background: repeating-linear-gradient(
+    90deg,
+    rgba(255,255,255,0.1) 0px,
+    rgba(255,255,255,0.1) 5px,
+    transparent 5px,
+    transparent 50px
+  );
+  animation: lightsMove 5s linear infinite;
+}
+
+@keyframes lightsMove {
+  from { background-position: 0 0; }
+  to { background-position: 200px 0; }
+}
+.screen { display:none; padding:20px; }
+.active { display:block; }
+button { padding:15px 25px; margin:10px; font-size:18px; border:none; border-radius:10px; cursor:pointer; font-weight:bold; }
+input { padding:10px; margin:10px; font-size:16px; }
+
+.blue-bg { background:linear-gradient(135deg,#007BFF,#00c6ff); }
+.yellow-bg { background:linear-gradient(135deg,#FFD700,#ff9800); }
+
+h1 { font-size:3em; text-shadow:2px 2px 5px black; }
+.question { font-size:3em; margin:20px; }
+
+#timerBar { width:80%; height:20px; background:#444; margin:20px auto; border-radius:10px; overflow:hidden; }
+#timerFill { height:100%; width:100%; background:red; }
+
+#imageBox img { width:200px; height:150px; margin:10px; border-radius:10px; }
+
+textarea { width:80%; height:100px; margin-top:10px; }
+</style>
+</head>
+<body>
+
+<div id="start" class="screen active">
+<div class="lights"></div>
+<div id="startContent">
+<img class="logo" src="https://cdn-icons-png.flaticon.com/512/616/616490.png">
+<h1>🔥 GRAND PRIX DE LAS TABLAS DE MULTIPLICAR 🔥</h1>
+<input id="team1" placeholder="Equipo Azul"><br>
+<input id="team2" placeholder="Equipo Amarillo"><br>
+
+<h3>Espacio personalizable</h3>
+<textarea placeholder="Escribe aquí lo que quieras..."></textarea>
+
+<br>
+<button onclick="startGame(60)">⏱ 1 minuto</button>
+<button onclick="startGame(300)">⏱ 5 minutos</button>
+<button onclick="startGame(600)">⏱ 10 minutos</button>
+</div>
+</div>
+
+<div id="countdown" class="screen">
+<h1 id="count"></h1>
+</div>
+
+<div id="game" class="screen">
+<h1 id="turn"></h1>
+
+<div id="imageBox">
+<img id="img1" src="https://via.placeholder.com/200">
+<img id="img2" src="https://via.placeholder.com/200">
+<img id="img3" src="https://via.placeholder.com/200">
+</div>
+
+<div class="question" id="question"></div>
+<input id="answer" type="number">
+<button onclick="checkAnswer()">Responder</button>
+
+<p>Puntos: <span id="score">0</span></p>
+
+<div id="timerBar"><div id="timerFill"></div></div>
+<p>Tiempo: <span id="time"></span></p>
+</div>
+
+<div id="result" class="screen">
+<h1 id="winnerText"></h1>
+<p id="final"></p>
+<button onclick="location.reload()">🔁 Volver a jugar</button>
+</div>
+
+<script>
+let teams = [];
+let scores = [0,0];
+let currentTeam = 0;
+let timeLeft = 0;
+let totalTime;
+let interval;
+let correctAnswer;
+let imgIndex = 0;
+
+function startGame(time){
+teams[0] = document.getElementById('team1').value || "Equipo Azul";
+teams[1] = document.getElementById('team2').value || "Equipo Amarillo";
+totalTime = time;
+currentTeam = Math.floor(Math.random()*2);
+nextTurn();
+}
+
+function nextTurn(){
+if(currentTeam > 1) return showResults();
+showScreen('countdown');
+let count=3;
+document.getElementById('count').innerText = teams[currentTeam];
+let cd=setInterval(()=>{
+count--;
+document.getElementById('count').innerText = teams[currentTeam] + " en " + count;
+if(count===0){clearInterval(cd);startTurn();}
+},1000);
+}
+
+function startTurn(){
+timeLeft = totalTime;
+showScreen('game');
+scores[currentTeam]=0;
+document.getElementById('turn').innerText = "Turno de " + teams[currentTeam];
+
+if(currentTeam===0){ document.body.className='blue-bg'; }
+else { document.body.className='yellow-bg'; }
+
+nextQuestion();
+startImages();
+
+interval=setInterval(()=>{
+timeLeft--;
+document.getElementById('time').innerText=timeLeft;
+let percent=(timeLeft/totalTime)*100;
+document.getElementById('timerFill').style.width=percent+"%";
+if(timeLeft<=0){
+clearInterval(interval);
+currentTeam++;
+nextTurn();
+}
+},1000);
+}
+
+function nextQuestion(){
+let a=Math.floor(Math.random()*10)+1;
+let b=Math.floor(Math.random()*10)+1;
+correctAnswer=a*b;
+document.getElementById('question').innerText=a+" x "+b;
+document.getElementById('answer').value='';
+}
+
+function checkAnswer(){
+let user=parseInt(document.getElementById('answer').value);
+if(user===correctAnswer){ scores[currentTeam]++; }
+document.getElementById('score').innerText=scores[currentTeam];
+nextQuestion();
+}
+
+function startImages(){
+setInterval(()=>{
+imgIndex=(imgIndex+1)%3;
+document.getElementById('img1').style.display = imgIndex===0?'inline':'none';
+document.getElementById('img2').style.display = imgIndex===1?'inline':'none';
+document.getElementById('img3').style.display = imgIndex===2?'inline':'none';
+},1000);
+}
+
+function showResults(){
+showScreen('result');
+let winner;
+let colorClass;
+
+if(scores[0]>scores[1]){ winner=teams[0]; colorClass='blue-bg'; }
+else if(scores[1]>scores[0]){ winner=teams[1]; colorClass='yellow-bg'; }
+else { winner='Empate'; colorClass=''; }
+
+if(colorClass) document.body.className=colorClass;
+
+document.getElementById('winnerText').innerText="🏆 GANA: "+winner;
+document.getElementById('final').innerText=`${teams[0]}: ${scores[0]} puntos\n${teams[1]}: ${scores[1]} puntos`;
+}
+
+function showScreen(id){
+document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+document.getElementById(id).classList.add('active');
+}
+</script>
+
+</body>
+</html>
