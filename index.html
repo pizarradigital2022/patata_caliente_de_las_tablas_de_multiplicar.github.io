@@ -147,9 +147,35 @@ currentTeam = Math.floor(Math.random()*2);
 nextTurn();
 }
 
-function nextTurn(){ if(currentTeam > 1){ return showResults(); } showScreen('countdown'); if(currentTeam===0){ document.getElementById( 'countdownImage' ).src='./resources/tabla_azul.png'; }else{ document.getElementById( 'countdownImage' ).src='./resources/tabla_amarilla.png'; } let count = 3; document.getElementById('count') .innerText = teams[currentTeam]; let cd = setInterval(()=>{ count--; if(count>0){ document.getElementById('count') .innerText = teams[currentTeam] + ' en ' + count; }else{ clearInterval(cd); startTurn(); } },1000); }
+function nextTurn(){ 
+  if(currentTeam > 1){ 
+    return showResults(); 
+  } showScreen('countdown'); 
+  if(currentTeam===0){ 
+    document.getElementById( 'countdownImage' ).src='./resources/tabla_azul.png'; 
+  }else{ 
+    document.getElementById( 'countdownImage' ).src='./resources/tabla_amarilla.png'; 
+  } let count = 3; document.getElementById('count') .innerText = teams[currentTeam]; 
+  let cd = setInterval(()=>{ count--; if(count>0){ 
+    document.getElementById('count') .innerText = teams[currentTeam] + ' en ' + count; 
+  }else{ 
+    clearInterval(cd); startTurn(); } },1000); 
+}
 
-function startTurn(){ timeLeft = totalTime; document.getElementById('time') .innerText = timeLeft; document.getElementById('score') .innerText = scores[currentTeam]; document.getElementById('streak') .innerText = 0; showScreen('game'); document.getElementById('turn') .innerText = 'Turno de ' + teams[currentTeam]; if(currentTeam===0){ document.body.className='blue-bg'; document.getElementById('teamImage') .src='./resources/equipo_azul.png'; }else{ document.body.className='yellow-bg'; document.getElementById('teamImage') .src='./resources/equipo_amarillo.png'; } nextQuestion(); interval=setInterval(()=>{ timeLeft--; document.getElementById('time') .innerText=timeLeft; let percent = (timeLeft/totalTime)*100; document.getElementById('timerFill') .style.width = percent+'%'; if(timeLeft<=0){ clearInterval(interval); currentTeam++; nextTurn(); } },1000); }
+function startTurn(){ 
+  timeLeft = totalTime; document.getElementById('time') .innerText = timeLeft; 
+  document.getElementById('score') .innerText = scores[currentTeam]; 
+  document.getElementById('streak') .innerText = 0; showScreen('game'); 
+  document.getElementById('turn') .innerText = 'Turno de ' + teams[currentTeam]; 
+  if(currentTeam===0){ 
+    document.body.className='blue-bg'; document.getElementById('teamImage') .src='./resources/equipo_azul.png'; 
+  }else{ 
+    document.body.className='yellow-bg'; document.getElementById('teamImage') .src='./resources/equipo_amarillo.png'; 
+  } nextQuestion(); 
+  interval=setInterval(()=>{ timeLeft--; document.getElementById('time') .innerText=timeLeft; 
+  let percent = (timeLeft/totalTime)*100; document.getElementById('timerFill') .style.width = percent+'%'; 
+  if(timeLeft<=0){ clearInterval(interval); currentTeam++; nextTurn(); } },1000); 
+}
 
 function nextQuestion(){ let a = Math.floor(Math.random()*10)+1; let b = Math.floor(Math.random()*10)+1; correctAnswer = a*b; document.getElementById('question') .innerText = a + ' × ' + b; document.getElementById('answer') .value=''; questionStartTime = Date.now(); }
 function checkAnswer(){ let user = parseInt( document.getElementById('answer').value ); let responseTime = (Date.now()-questionStartTime)/1000; stats[currentTeam] .totalResponseTime += responseTime; stats[currentTeam] .answers++; if(user===correctAnswer){ scores[currentTeam]++; stats[currentTeam] .correct++; stats[currentTeam] .streak++; if( stats[currentTeam].streak > stats[currentTeam].bestStreak ){ stats[currentTeam] .bestStreak = stats[currentTeam] .streak; } }else{ stats[currentTeam] .wrong++; stats[currentTeam] .streak = 0; } document.getElementById('score') .innerText = scores[currentTeam]; document.getElementById('streak') .innerText = stats[currentTeam].streak; nextQuestion(); }
@@ -163,7 +189,24 @@ document.getElementById('img3').style.display = imgIndex===2?'inline':'none';
 },1000);
 }
 
-function showResults(){ showScreen('result'); document.body.className=''; let winner; if(scores[0] > scores[1]){ winner = teams[0]; }else if(scores[1] > scores[0]){ winner = teams[1]; }else{ winner = 'EMPATE'; } document.getElementById('winnerText') .innerHTML = '🏆 GANADOR: ' + winner; let html=''; for(let i=0;i<2;i++){ let total = stats[i].correct + stats[i].wrong; let porcentaje = total===0 ? 0 : ( (stats[i].correct/total)*100 ).toFixed(1); let velocidad = stats[i].answers===0 ? 0 : ( stats[i].totalResponseTime / stats[i].answers ).toFixed(2); html += ` <div style=" margin:20px auto; max-width:600px; background:rgba(255,255,255,.15); padding:20px; border-radius:20px; "> <h2>${teams[i]}</h2> <p>✅ Aciertos: ${stats[i].correct}</p> <p>❌ Errores: ${stats[i].wrong}</p> <p>📊 Porcentaje de éxito: ${porcentaje}%</p> <p>⚡ Velocidad media: ${velocidad} segundos</p> <p>🔥 Mejor racha: ${stats[i].bestStreak}</p> <p>🏅 Puntuación final: ${scores[i]}</p> </div> `; } document.getElementById('statsContainer') .innerHTML = html; }
+function showResults(){ 
+  showScreen('result'); 
+  document.body.className=''; 
+  let winner; if(scores[0] > scores[1]){ 
+    winner = teams[0]; 
+  }else if(scores[1] > scores[0]){
+    winner = teams[1]; }
+  else{ winner = 'EMPATE'; 
+  } 
+  document.getElementById('winnerText') .innerHTML = '🏆 GANADOR: ' + winner; let html=''; 
+  for(let i=0;i<2;i++){ 
+    let total = stats[i].correct + stats[i].wrong; 
+    let porcentaje = total===0 ? 0 : ( (stats[i].correct/total)*100 ).toFixed(1); 
+    let velocidad = stats[i].answers===0 ? 0 : ( stats[i].totalResponseTime / stats[i].answers ).toFixed(2); 
+    html += ` <div style=" margin:20px auto; max-width:600px; background:rgba(255,255,255,.15); padding:20px; border-radius:20px; "> <h2>${teams[i]}</h2> <p>✅ Aciertos: ${stats[i].correct}</p> <p>❌ Errores: ${stats[i].wrong}</p> <p>📊 Porcentaje de éxito: ${porcentaje}%</p> <p>⚡ Velocidad media: ${velocidad} segundos</p> <p>🔥 Mejor racha: ${stats[i].bestStreak}</p> <p>🏅 Puntuación final: ${scores[i]}</p> </div> `; 
+  } 
+  document.getElementById('statsContainer') .innerHTML = html; 
+}
   
 function showScreen(id){
 document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
