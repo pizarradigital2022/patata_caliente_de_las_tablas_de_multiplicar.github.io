@@ -74,6 +74,11 @@ h1 { font-size:3em; text-shadow:2px 2px 5px black; }
 #imageBox img { width:200px; height:150px; margin:10px; border-radius:10px; }
 
 textarea { width:80%; height:100px; margin-top:10px; }
+
+#result{ background:url('./resources/decorado_de_fondo.png') center/cover no-repeat; position:relative; overflow:hidden; } 
+#result::before{ content:""; position:absolute; inset:0; background:rgba(0,0,0,.45); } 
+#result #startContent{ position:relative; z-index:2; }
+  
 </style>
 </head>
 <body>
@@ -97,43 +102,42 @@ textarea { width:80%; height:100px; margin-top:10px; }
 </div>
 
 <div id="countdown" class="screen">
-<h1 id="count"></h1>
+  <h1 id="count"></h1>
+  <img id="countdownImage" src="" style=" width:350px; border-radius:15px; margin-top:20px; box-shadow:0 0 15px rgba(0,0,0,.5); ">
 </div>
 
-<div id="game" class="screen">
-<h1 id="turn"></h1>
-
-<div id="imageBox">
-<img id="img1" src="https://via.placeholder.com/200">
-<img id="img2" src="https://via.placeholder.com/200">
-<img id="img3" src="https://via.placeholder.com/200">
+<div id="game" class="screen"> 
+  <h1 id="turn"></h1> 
+  <img id="teamImage" src="" style=" width:250px; margin:15px; border-radius:15px; box-shadow:0 0 15px rgba(0,0,0,.4); "> 
+  <div class="question" id="question"></div> 
+  <input id="answer" type="number"> 
+  <button onclick="checkAnswer()"> Responder </button> 
+  <p>Puntos: <span id="score">0</span></p> 
+  <h2> 🔥 Racha: <span id="streak">0</span> </h2> 
+  <div id="timerBar"> 
+    <div id="timerFill"></div> 
+  </div> <p> Tiempo: <span id="time"></span> </p> 
 </div>
 
-<div class="question" id="question"></div>
-<input id="answer" type="number">
-<button onclick="checkAnswer()">Responder</button>
-
-<p>Puntos: <span id="score">0</span></p>
-
-<div id="timerBar"><div id="timerFill"></div></div>
-<p>Tiempo: <span id="time"></span></p>
-</div>
-
-<div id="result" class="screen">
-<h1 id="winnerText"></h1>
-<p id="final"></p>
-<button onclick="location.reload()">🔁 Volver a jugar</button>
+<div id="result" class="screen"> 
+  <div class="lights"></div> 
+  <div id="startContent"> 
+    <h1 id="winnerText"></h1> 
+    <div id="statsContainer"></div> 
+    <button onclick="location.reload()"> 🔁 Volver a jugar </button> 
+  </div> 
 </div>
 
 <script>
-let teams = [];
-let scores = [0,0];
-let currentTeam = 0;
-let timeLeft = 0;
-let totalTime;
-let interval;
-let correctAnswer;
-let imgIndex = 0;
+  let teams = []; 
+  let scores = [0,0]; 
+  let currentTeam = 0; 
+  let timeLeft = 0; 
+  let totalTime; 
+  let interval; 
+  let correctAnswer; 
+  let questionStartTime; 
+  let stats = [ { correct:0, wrong:0, totalResponseTime:0, answers:0, bestStreak:0, streak:0 }, { correct:0, wrong:0, totalResponseTime:0, answers:0, bestStreak:0, streak:0 } ];
 
 function startGame(time){
 teams[0] = document.getElementById('team1').value || "Equipo Azul";
@@ -143,57 +147,12 @@ currentTeam = Math.floor(Math.random()*2);
 nextTurn();
 }
 
-function nextTurn(){
-if(currentTeam > 1) return showResults();
-showScreen('countdown');
-let count=3;
-document.getElementById('count').innerText = teams[currentTeam];
-let cd=setInterval(()=>{
-count--;
-document.getElementById('count').innerText = teams[currentTeam] + " en " + count;
-if(count===0){clearInterval(cd);startTurn();}
-},1000);
-}
+function nextTurn(){ if(currentTeam > 1){ return showResults(); } showScreen('countdown'); if(currentTeam===0){ document.getElementById( 'countdownImage' ).src='./resources/tabla_azul.png'; }else{ document.getElementById( 'countdownImage' ).src='./resources/tabla_amarilla.png'; } let count = 3; document.getElementById('count') .innerText = teams[currentTeam]; let cd = setInterval(()=>{ count--; if(count>0){ document.getElementById('count') .innerText = teams[currentTeam] + ' en ' + count; }else{ clearInterval(cd); startTurn(); } },1000); }
 
-function startTurn(){
-timeLeft = totalTime;
-showScreen('game');
-scores[currentTeam]=0;
-document.getElementById('turn').innerText = "Turno de " + teams[currentTeam];
+function startTurn(){ timeLeft = totalTime; document.getElementById('time') .innerText = timeLeft; document.getElementById('score') .innerText = scores[currentTeam]; document.getElementById('streak') .innerText = 0; showScreen('game'); document.getElementById('turn') .innerText = 'Turno de ' + teams[currentTeam]; if(currentTeam===0){ document.body.className='blue-bg'; document.getElementById('teamImage') .src='./resources/equipo_azul.png'; }else{ document.body.className='yellow-bg'; document.getElementById('teamImage') .src='./resources/equipo_amarillo.png'; } nextQuestion(); interval=setInterval(()=>{ timeLeft--; document.getElementById('time') .innerText=timeLeft; let percent = (timeLeft/totalTime)*100; document.getElementById('timerFill') .style.width = percent+'%'; if(timeLeft<=0){ clearInterval(interval); currentTeam++; nextTurn(); } },1000); }
 
-if(currentTeam===0){ document.body.className='blue-bg'; }
-else { document.body.className='yellow-bg'; }
-
-nextQuestion();
-startImages();
-
-interval=setInterval(()=>{
-timeLeft--;
-document.getElementById('time').innerText=timeLeft;
-let percent=(timeLeft/totalTime)*100;
-document.getElementById('timerFill').style.width=percent+"%";
-if(timeLeft<=0){
-clearInterval(interval);
-currentTeam++;
-nextTurn();
-}
-},1000);
-}
-
-function nextQuestion(){
-let a=Math.floor(Math.random()*10)+1;
-let b=Math.floor(Math.random()*10)+1;
-correctAnswer=a*b;
-document.getElementById('question').innerText=a+" x "+b;
-document.getElementById('answer').value='';
-}
-
-function checkAnswer(){
-let user=parseInt(document.getElementById('answer').value);
-if(user===correctAnswer){ scores[currentTeam]++; }
-document.getElementById('score').innerText=scores[currentTeam];
-nextQuestion();
-}
+function nextQuestion(){ let a = Math.floor(Math.random()*10)+1; let b = Math.floor(Math.random()*10)+1; correctAnswer = a*b; document.getElementById('question') .innerText = a + ' × ' + b; document.getElementById('answer') .value=''; questionStartTime = Date.now(); }
+function checkAnswer(){ let user = parseInt( document.getElementById('answer').value ); let responseTime = (Date.now()-questionStartTime)/1000; stats[currentTeam] .totalResponseTime += responseTime; stats[currentTeam] .answers++; if(user===correctAnswer){ scores[currentTeam]++; stats[currentTeam] .correct++; stats[currentTeam] .streak++; if( stats[currentTeam].streak > stats[currentTeam].bestStreak ){ stats[currentTeam] .bestStreak = stats[currentTeam] .streak; } }else{ stats[currentTeam] .wrong++; stats[currentTeam] .streak = 0; } document.getElementById('score') .innerText = scores[currentTeam]; document.getElementById('streak') .innerText = stats[currentTeam].streak; nextQuestion(); }
 
 function startImages(){
 setInterval(()=>{
@@ -204,25 +163,21 @@ document.getElementById('img3').style.display = imgIndex===2?'inline':'none';
 },1000);
 }
 
-function showResults(){
-showScreen('result');
-let winner;
-let colorClass;
-
-if(scores[0]>scores[1]){ winner=teams[0]; colorClass='blue-bg'; }
-else if(scores[1]>scores[0]){ winner=teams[1]; colorClass='yellow-bg'; }
-else { winner='Empate'; colorClass=''; }
-
-if(colorClass) document.body.className=colorClass;
-
-document.getElementById('winnerText').innerText="🏆 GANA: "+winner;
-document.getElementById('final').innerText=`${teams[0]}: ${scores[0]} puntos\n${teams[1]}: ${scores[1]} puntos`;
-}
-
+function showResults(){ showScreen('result'); document.body.className=''; let winner; if(scores[0] > scores[1]){ winner = teams[0]; }else if(scores[1] > scores[0]){ winner = teams[1]; }else{ winner = 'EMPATE'; } document.getElementById('winnerText') .innerHTML = '🏆 GANADOR: ' + winner; let html=''; for(let i=0;i<2;i++){ let total = stats[i].correct + stats[i].wrong; let porcentaje = total===0 ? 0 : ( (stats[i].correct/total)*100 ).toFixed(1); let velocidad = stats[i].answers===0 ? 0 : ( stats[i].totalResponseTime / stats[i].answers ).toFixed(2); html += ` <div style=" margin:20px auto; max-width:600px; background:rgba(255,255,255,.15); padding:20px; border-radius:20px; "> <h2>${teams[i]}</h2> <p>✅ Aciertos: ${stats[i].correct}</p> <p>❌ Errores: ${stats[i].wrong}</p> <p>📊 Porcentaje de éxito: ${porcentaje}%</p> <p>⚡ Velocidad media: ${velocidad} segundos</p> <p>🔥 Mejor racha: ${stats[i].bestStreak}</p> <p>🏅 Puntuación final: ${scores[i]}</p> </div> `; } document.getElementById('statsContainer') .innerHTML = html; }
+  
 function showScreen(id){
 document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
 document.getElementById(id).classList.add('active');
 }
+
+  document.getElementById('answer')
+.addEventListener('keydown',function(e){
+
+    if(e.key==='Enter'){
+        checkAnswer();
+    }
+
+});
 </script>
 
 </body>
