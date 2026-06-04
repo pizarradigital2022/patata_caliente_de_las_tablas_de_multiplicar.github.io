@@ -74,6 +74,20 @@ h1 { font-size:3em; text-shadow:2px 2px 5px black; }
 #timerFill { height:100%; width:100%; background:red; }
 
 #imageBox img { width:200px; height:150px; margin:10px; border-radius:10px; }
+
+/* Tarjeta de créditos integrada con el estilo de las instrucciones */
+.credits-box {
+  background: rgba(0, 0, 0, 0.6); 
+  border: 2px solid rgba(255, 255, 255, 0.15); 
+  border-radius: 12px; 
+  max-width: 400px; 
+  margin: 30px auto 10px auto; 
+  padding: 12px 20px; 
+  box-shadow: 0 6px 15px rgba(0,0,0,0.4);
+  font-size: 13px;
+  color: #ffffff;
+  line-height: 1.5;
+}
   
 </style>
 </head>
@@ -100,6 +114,14 @@ h1 { font-size:3em; text-shadow:2px 2px 5px black; }
 <button onclick="startGame(60)">⏱ 1 minuto</button>
 <button onclick="startGame(300)">⏱ 5 minutos</button>
 <button onclick="startGame(600)">⏱ 10 minutos</button>
+</div>
+<div class="credits-box">
+  <p style="margin: 0;">
+    Autor: <strong>Joaquín Candañedo</strong>.<br>
+    <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank">
+      <img src="./resources/CC_BY_SA.png" alt="Creative Commons Reconocimiento - Compartir Igual">
+    </a>
+  </p>  
 </div>
 </div>
 
