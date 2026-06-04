@@ -74,6 +74,39 @@ h1 { font-size:3em; text-shadow:2px 2px 5px black; }
 #timerFill { height:100%; width:100%; background:red; }
 
 #imageBox img { width:200px; height:150px; margin:10px; border-radius:10px; }
+
+/* Estilos legibles para el pie de autoría y la licencia */
+.credits {
+  font-size: 13px;
+  color: #b3b3b3; /* Gris claro con buen contraste sobre fondo oscuro */
+  line-height: 1.6;
+  margin: 30px auto 10px auto;
+  padding: 0 15px;
+}
+
+.credits a {
+  color: #ff9800; /* Naranja brillante a juego con el estilo del juego */
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.credits a:hover {
+  text-decoration: underline;
+  color: #ffb74d; /* Naranja más suave al pasar el cursor */
+}
+
+.credits img {
+  margin-top: 8px;
+  vertical-align: middle;
+  border-radius: 4px;
+  opacity: 0.85;
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+.credits img:hover {
+  opacity: 1;
+  transform: scale(1.02);
+}
   
 </style>
 </head>
@@ -101,9 +134,13 @@ h1 { font-size:3em; text-shadow:2px 2px 5px black; }
 <button onclick="startGame(300)">⏱ 5 minutos</button>
 <button onclick="startGame(600)">⏱ 10 minutos</button>
 </div>
-   <hr>
-  <p>Autor: Joaquín Candañedo.<br><a href="https://creativecommons.org/licenses/by-sa/4.0/"><img src="./resources/CC_BY_SA.png" alt="Creative Commons Reconocimiento - Compartir Igual"></a></p>  
-
+<hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin-top: 30px;">
+<div class="credits">
+  <p>Autor: Joaquín Candañedo.<br>
+  <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank">
+    <img src="./resources/CC_BY_SA.png" alt="Creative Commons Reconocimiento - Compartir Igual">
+  </a></p>  
+</div>
 </div>
 
 <!-- PANTALLA DE CUENTA ATRÁS (CON FONDO CARGADO) -->
