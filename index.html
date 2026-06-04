@@ -75,10 +75,10 @@ h1 { font-size:3em; text-shadow:2px 2px 5px black; }
 
 #imageBox img { width:200px; height:150px; margin:10px; border-radius:10px; }
 
-/* Estilos legibles para el pie de autoría y la licencia */
+/* Estilos legibles y claros para el pie de autoría y la licencia */
 .credits {
   font-size: 13px;
-  color: #b3b3b3; /* Gris claro con buen contraste sobre fondo oscuro */
+  color: #e0e0e0; /* Gris muy claro para una lectura cómoda y nítida */
   line-height: 1.6;
   margin: 30px auto 10px auto;
   padding: 0 15px;
@@ -99,13 +99,20 @@ h1 { font-size:3em; text-shadow:2px 2px 5px black; }
   margin-top: 8px;
   vertical-align: middle;
   border-radius: 4px;
-  opacity: 0.85;
+  opacity: 0.9; /* Imagen de la licencia un poco más visible por defecto */
   transition: opacity 0.2s, transform 0.2s;
 }
 
 .credits img:hover {
   opacity: 1;
   transform: scale(1.02);
+}
+
+/* Línea divisoria más clara y definida */
+.credits-divider {
+  border: 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.25); /* Más clara y visible sobre el fondo oscuro */
+  margin-top: 30px;
 }
   
 </style>
